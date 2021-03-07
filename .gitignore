@@ -10,6 +10,8 @@ Desktop.ini
 *.egg-info
 dist
 build
+qrimg
+*.txt
 
 # My configurations:
 db.ini
