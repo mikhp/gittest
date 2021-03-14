@@ -1,4 +1,5 @@
 # 通过tushare，获取数据，展示股票图形
+import os
 import pandas as pd
 import tushare as ts
 import tkinter as tk
@@ -13,7 +14,9 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 
 # 从配置文件中读取token等参数
 cf = configparser.ConfigParser()
-cf.read("/Users/mikhp/vspro/gittest/test.ini")  # 读取配置文件，如果写文件的绝对路径，就可以不用os模块
+inifile = os.path.realpath("test.ini")
+print(inifile)
+cf.read(inifile)  # 读取配置文件，如果写文件的绝对路径，就可以不用os模块
 
 token = cf.get("tushare", "token")  # 获取[tushare]中token对应的值
 print("token:" , token)
