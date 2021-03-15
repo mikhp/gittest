@@ -12,7 +12,7 @@ dist
 build
 qrimg
 *.txt
-
+*.spec
 # My configurations:
 test.ini
 deploy_key_rsa
