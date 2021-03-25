@@ -11,9 +11,7 @@ import backtrader as bt
 
 # Create a Stratey
 class TestStrategy(bt.Strategy):
-    params = (
-        ('maperiod', 15),
-    )
+    params = (('maperiod', 15), )
 
     def log(self, txt, dt=None):
         ''' Logging function fot this strategy'''
@@ -32,8 +30,9 @@ class TestStrategy(bt.Strategy):
             self.datas[0], period=self.params.maperiod)
         # Indicators for the plotting show
         bt.indicators.ExponentialMovingAverage(self.datas[0], period=25)
-        bt.indicators.WeightedMovingAverage(
-            self.datas[0], period=25, subplot=True)
+        bt.indicators.WeightedMovingAverage(self.datas[0],
+                                            period=25,
+                                            subplot=True)
         bt.indicators.StochasticSlow(self.datas[0])
         bt.indicators.MACDHisto(self.datas[0])
         rsi = bt.indicators.RSI(self.datas[0])
@@ -49,18 +48,15 @@ class TestStrategy(bt.Strategy):
         # Attention: broker could reject order if not enough cash
         if order.status in [order.Completed]:
             if order.isbuy():
-                self.log(
-                    'BUY EXECUTED, Price: %.2f, Cost: %.2f, Comm %.2f' %
-                    (order.executed.price,
-                     order.executed.value,
-                     order.executed.comm))
+                self.log('BUY EXECUTED, Price: %.2f, Cost: %.2f, Comm %.2f' %
+                         (order.executed.price, order.executed.value,
+                          order.executed.comm))
 
                 self.buyprice = order.executed.price
                 self.buycomm = order.executed.comm
             else:  # Sell
                 self.log('SELL EXECUTED, Price: %.2f, Cost: %.2f, Comm %.2f' %
-                         (order.executed.price,
-                          order.executed.value,
+                         (order.executed.price, order.executed.value,
                           order.executed.comm))
 
             self.bar_executed = len(self)
@@ -118,15 +114,19 @@ if __name__ == '__main__':
     # Datas are in a subfolder of the samples. Need to find where the script is
     # because it could have been called from anywhere
     modpath = os.path.dirname(os.path.abspath(sys.argv[0]))
-    datapath = os.path.join(modpath, 'orcl-1995-2014.txt')
+    # datapath = os.path.join(modpath, 'orcl-1995-2014.txt')
+    datapath = os.path.join(modpath, '300348.csv')
 
     # Create a Data Feed
     # Data Feeds, Indicators and Strategies have lines.A line is a succession of points that when joined together form this line. When talking about the markets,
     # a Data Feed has usually the following set of points per day:Open, High, Low, Close, Volume, OpenInterest
 
     print(datapath)
-    data = bt.feeds.YahooFinanceCSVData(dataname=datapath, fromdate=datetime.datetime(2000, 1, 1), todate=datetime.datetime(2000, 12, 31), reverse=False)
-    print(data)
+    # fromdate 要早于数据源开始时间  todate 要迟于数据源结束时间，否则报错 array assignment index out of range
+    data = bt.feeds.YahooFinanceCSVData(dataname=datapath,
+                                        fromdate=datetime.datetime(1995, 1, 1),
+                                        todate=datetime.datetime(2022, 12, 31),
+                                        reverse=False)
     # Add the Data Feed to Cerebro
     cerebro.adddata(data)
 
