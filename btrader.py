@@ -115,7 +115,8 @@ if __name__ == '__main__':
     # because it could have been called from anywhere
     modpath = os.path.dirname(os.path.abspath(sys.argv[0]))
     # datapath = os.path.join(modpath, 'orcl-1995-2014.txt')
-    datapath = os.path.join(modpath, '300348.csv')
+    STOCKID = "600031.sh"
+    datapath = os.path.join(modpath, '{}.csv'.format(600031))
 
     # Create a Data Feed
     # Data Feeds, Indicators and Strategies have lines.A line is a succession of points that when joined together form this line. When talking about the markets,
