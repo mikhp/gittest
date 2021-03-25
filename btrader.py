@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
@@ -5,7 +6,6 @@ import datetime  # For datetime objects
 import os.path  # To manage paths
 import sys  # To find out the script name (in argv[0])
 
-# Import the backtrader platform
 import backtrader as bt
 
 
@@ -115,8 +115,8 @@ if __name__ == '__main__':
     # because it could have been called from anywhere
     modpath = os.path.dirname(os.path.abspath(sys.argv[0]))
     # datapath = os.path.join(modpath, 'orcl-1995-2014.txt')
-    STOCKID = "600031.sh"
-    datapath = os.path.join(modpath, '{}.csv'.format(600031))
+    STOCKID = "600900.sh"
+    datapath = os.path.join(modpath, '{}.csv'.format(STOCKID))
 
     # Create a Data Feed
     # Data Feeds, Indicators and Strategies have lines.A line is a succession of points that when joined together form this line. When talking about the markets,

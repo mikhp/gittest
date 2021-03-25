@@ -12,7 +12,7 @@ dist
 build
 qrimg
 #*.txt
-.csv
+*.csv
 *.spec
 # My configurations:
 test.ini
