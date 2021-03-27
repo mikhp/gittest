@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import (absolute_import, division, print_function,unicode_literals)
 
 import datetime  # For datetime objects
 import os.path  # To manage paths
 import sys  # To find out the script name (in argv[0])
-
 import backtrader as bt
 
 
@@ -30,9 +28,7 @@ class TestStrategy(bt.Strategy):
             self.datas[0], period=self.params.maperiod)
         # Indicators for the plotting show
         bt.indicators.ExponentialMovingAverage(self.datas[0], period=25)
-        bt.indicators.WeightedMovingAverage(self.datas[0],
-                                            period=25,
-                                            subplot=True)
+        bt.indicators.WeightedMovingAverage(self.datas[0], period=25, subplot=True)
         bt.indicators.StochasticSlow(self.datas[0])
         bt.indicators.MACDHisto(self.datas[0])
         rsi = bt.indicators.RSI(self.datas[0])
@@ -48,9 +44,8 @@ class TestStrategy(bt.Strategy):
         # Attention: broker could reject order if not enough cash
         if order.status in [order.Completed]:
             if order.isbuy():
-                self.log('BUY EXECUTED, Price: %.2f, Cost: %.2f, Comm %.2f' %
-                         (order.executed.price, order.executed.value,
-                          order.executed.comm))
+                self.log('BUY EXECUTED, Price: %.2f, Cost: %.2f, Comm %.2f' % (
+                    order.executed.price, order.executed.value, order.executed.comm))
 
                 self.buyprice = order.executed.price
                 self.buycomm = order.executed.comm
@@ -105,6 +100,12 @@ class TestStrategy(bt.Strategy):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print("需要stockid，如：600031.sh或者300348.sz")
+        sys.exit()
+
+    stockid_input = sys.argv[1]
+
     # Create a cerebro entity
     cerebro = bt.Cerebro()
 
@@ -115,7 +116,7 @@ if __name__ == '__main__':
     # because it could have been called from anywhere
     modpath = os.path.dirname(os.path.abspath(sys.argv[0]))
     # datapath = os.path.join(modpath, 'orcl-1995-2014.txt')
-    STOCKID = "600900.sh"
+    STOCKID = stockid_input
     datapath = os.path.join(modpath, '{}.csv'.format(STOCKID))
 
     # Create a Data Feed
