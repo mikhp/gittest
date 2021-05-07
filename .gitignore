@@ -11,7 +11,7 @@ Desktop.ini
 dist
 build
 qrimg
-#*.txt
+*.txt
 *.csv
 *.spec
 # My configurations:
