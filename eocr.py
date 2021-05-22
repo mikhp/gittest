@@ -7,5 +7,8 @@ reader = easyocr.Reader(['ch_sim', 'en'])
 path = sys.argv[1]
 print(path)
 txt = reader.readtext(path)
-for i in txt:
-    print(i[1])
+with open("ocr.txt", "a+") as f:
+    for i in txt:
+        f.writelines(i[1])
+
+f.close()
