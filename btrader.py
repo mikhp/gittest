@@ -7,6 +7,9 @@ import os.path  # To manage paths
 import sys
 from tkinter.constants import S  # To find out the script name (in argv[0])
 import backtrader as bt
+from backtrader import broker
+from backtrader import brokers
+from backtrader import sizer
 
 
 # Create a Stratey
@@ -108,7 +111,7 @@ class kdjStrategy(bt.Strategy):
     params = dict(
         fast_ma=2,
         slow_ma=5,
-        rsi_period =5,
+        rsi_period=5,
         rsi_high=60,
         rsi_low=50,
     )
@@ -121,9 +124,7 @@ class kdjStrategy(bt.Strategy):
         # self.dataclose = self.datas[0].close
         # fast_ma = bt.ind.EMA(period=self.p.fast_ma)
         # slow_ma = bt.ind.EMA(period=self.p.slow_ma)
-        self.crossover = bt.ind.CrossOver(self.sma,self.sma2)
-      
-        
+        self.crossover = bt.ind.CrossOver(self.sma, self.sma2)
 
         # print(self.datas[0])
     def log(self, txt, dt=None):
@@ -138,11 +139,9 @@ class kdjStrategy(bt.Strategy):
 
         if self.crossover < 0 and self.rsi < self.p.rsi_low:
             self.order = self.buy()
-            
+
         elif self.crossover > 0 and self.rsi > self.p.rsi_high:
             self.order = self.sell()
-            
-            
 
         self.order = None
 
@@ -156,6 +155,86 @@ class kdjStrategy(bt.Strategy):
             self.log('Order Canceled/Margin/Rejected')
 
 
+class maStrategy(bt.Strategy):
+    #全局设定交易策略的参数
+    params = (
+        ('maperiod_fast', 5),
+        ('maperiod_slow', 10),
+        ('sizeper', 100),
+    )
+
+    def log(self, txt, dt=None):
+        ''' Logging function fot this strategy'''
+        dt = dt or self.datas[0].datetime.date(0)
+        print('%s, %s ' % (dt.isoformat(), txt))
+
+    def __init__(self):
+        #指定价格序列
+        self.dataclose = self.datas[0].close
+        # 初始化交易指令、买卖价格和手续费
+        self.order = None
+        self.buyprice = None
+        self.buycomm = None
+
+        #添加移动均线指标，内置了talib模块
+        self.sma1 = bt.indicators.SimpleMovingAverage(
+            period=self.params.maperiod_fast)
+        self.sma2 = bt.indicators.SimpleMovingAverage(
+            period=self.params.maperiod_slow)
+
+    def pp(self):
+        print('当前可用资金', self.broker.getcash())
+        print('当前总资产', self.broker.getvalue())
+        print('当前持仓量', self.broker.getposition(self.data).size)
+        print('当前持仓成本', self.broker.getposition(self.data).price)
+        # 也可以直接获取持仓
+        print('当前持仓量', self.getposition(self.data).size)
+        print('当前持仓成本', self.getposition(self.data).price)
+
+    def next(self):
+        if self.order:  # 检查是否有指令等待执行,
+            return
+
+        # print("=====",bSize)
+        # print("+++++", sSize)
+
+        # 检查是否持仓
+        if not self.position:  # 没有持仓
+            #执行买入条件判断：收盘价格上涨突破20日均线
+            bSize = int(
+                float(self.broker.getcash()) / self.dataclose[0] *
+                self.params.sizeper / 100)  #按照百分比来计算可买数量
+            if self.sma1[0] < self.sma2[0]:
+                #执行买入
+                self.order = self.buy(size=bSize)
+        else:
+            #执行卖出条件判断：收盘价格跌破20日均线
+            if self.sma1[0] > self.sma2[0]:
+                sSize = int(
+                    float(self.getposition(self.data).size) *
+                    self.params.sizeper / 100)
+                #执行卖出
+                if sSize >= 0:
+                    self.order = self.sell(size=sSize)
+
+        self.order = None
+
+    def notify_order(self, order):
+        if order.status in [order.Completed]:
+            if order.isbuy():
+                self.log('买入, %.2f  数量：%i' %
+                         (order.executed.price, order.executed.size))
+            elif order.issell():
+                self.log('卖出, %.2f  数量：%i' %
+                         (order.executed.price, order.executed.size))
+
+        elif order.status in [order.Canceled, order.Margin, order.Rejected]:
+            # self.log('Order Canceled/Margin/Rejected')
+            print("---",order.status)
+         
+
+
+
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         print("需要stockid，如：600031.sh或者300348.sz")
@@ -167,7 +246,7 @@ if __name__ == '__main__':
     cerebro = bt.Cerebro()
 
     # Add a strategy
-    cerebro.addstrategy(kdjStrategy)
+    cerebro.addstrategy(maStrategy)
 
     # Datas are in a subfolder of the samples. Need to find where the script is
     # because it could have been called from anywhere
@@ -213,4 +292,4 @@ if __name__ == '__main__':
     print('盈亏率: %.2f' % ab + '%')
 
     # Plot the result
-    cerebro.plot()
+    # cerebro.plot()
