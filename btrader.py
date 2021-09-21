@@ -10,6 +10,8 @@ import backtrader as bt
 from backtrader import broker
 from backtrader import brokers
 from backtrader import sizer
+from backtrader import order
+from backtrader.strategy import Strategy
 
 
 # Create a Stratey
@@ -107,6 +109,21 @@ class TestStrategy(bt.Strategy):
                 self.order = self.sell()
 
 
+class bs(bt.Strategy):
+    params = dict(fma=5)
+
+    def __init__(self):
+        sma1, sma2 = bt.ind.SMA(period=10), bt.ind.SMA(period=30)
+        self.crossover = bt.ind.CrossOver(sma1, sma2)        
+        self.rsi = bt.ind.RSI()
+
+    def next(self):
+        if self.rsi < 30 :
+            self.buy()            
+        if self.rsi >= 30 :
+            self.sell()
+
+
 class kdjStrategy(bt.Strategy):
     params = dict(
         fast_ma=2,
@@ -160,7 +177,7 @@ class maStrategy(bt.Strategy):
     params = (
         ('maperiod_fast', 5),
         ('maperiod_slow', 10),
-        ('sizeper', 100),
+        ('sizeper', 99),
     )
 
     def log(self, txt, dt=None):
@@ -230,9 +247,7 @@ class maStrategy(bt.Strategy):
 
         elif order.status in [order.Canceled, order.Margin, order.Rejected]:
             # self.log('Order Canceled/Margin/Rejected')
-            print("---",order.status)
-         
-
+            print("---", order.status)
 
 
 if __name__ == '__main__':
@@ -246,7 +261,7 @@ if __name__ == '__main__':
     cerebro = bt.Cerebro()
 
     # Add a strategy
-    cerebro.addstrategy(maStrategy)
+    cerebro.addstrategy(bs)
 
     # Datas are in a subfolder of the samples. Need to find where the script is
     # because it could have been called from anywhere
@@ -292,4 +307,4 @@ if __name__ == '__main__':
     print('盈亏率: %.2f' % ab + '%')
 
     # Plot the result
-    # cerebro.plot()
+    cerebro.plot()
