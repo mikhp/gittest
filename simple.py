@@ -11,7 +11,6 @@ import backtrader as bt
 import backtrader.feeds as btfeeds
 
 
-
 class mmStrategy(bt.Strategy):
     print("建立策略mmStrategy")
     params = (('p1', 5), ('p2', 12), ('p3', 30), ('size', 700))
@@ -115,11 +114,10 @@ if __name__ == '__main__':
     # cc.addsizer(bt.sizers.FixedSize, stake=1000)
     startMoney = cc.getbroker().getvalue()
     print('开始金额: %.2f' % startMoney)
-    cc.addanalyzer(bt.analyzers.SharpeRatio, _name = 'SharpeRatio')
+    cc.addanalyzer(bt.analyzers.SharpeRatio, _name='SharpeRatio')
     cc.addanalyzer(bt.analyzers.DrawDown, _name='DW')
-    cc.addanalyzer(bt.analyzers.)
-    results=cc.run()
- 
+    results = cc.run()
+
     strat = results[0]
     endMoney = cc.getbroker().getvalue()
     vMoney = endMoney-startMoney
@@ -130,4 +128,4 @@ if __name__ == '__main__':
 
     print('夏普比率:', strat.analyzers.SharpeRatio.get_analysis())
     print('回撤指标:', strat.analyzers.DW.get_analysis())
-    cc.plot(style='bar')
+    # cc.plot(style='bar')
