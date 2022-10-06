@@ -4,3 +4,4 @@
 2、getdata.py(获取tushare股票数据)
 3、fenci.py(文字分词工具)
 4、mem.py(记忆训练表格生成工具)
+5、eocr.py(图片转文字)
